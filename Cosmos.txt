@@ -1,0 +1,1850 @@
+#include<graphics.h>
+#include<iostream>
+#include<fstream>
+#include<stdlib.h>
+#include<string.h>
+using namespace std;
+
+//Record specification
+
+	
+
+class cosmos
+{
+	public:	char ind[5],plid[5],plnm[15],egy[15],cst[15],nos[15],typp[15];
+	public: char indx[5],sid[5],snm[15],pl[15],ely[15],typs[15];
+	public: char indy[5],stid[5],stnm[15],con[15],gal[15];
+	public: char indz[5],glid[5],glnm[15],glsh[15],glco[15];
+	public: char indw[5],astid[4],astnm[15],yop[15],asty[15],galx[15];
+	public: char inds[5],metid[5],metnm[15],yopy[15],mety[15],galy[15];
+	public: char indv[5],comid[5],comnm[15],yopz[15],comt[15],galz[15];
+}stdrec[500];
+
+
+int no;
+
+//PLANET RECORD
+
+int get_num_records()
+{
+	int I=0;
+	fstream file2;
+		file2.open("record.txt",ios::in);
+		if(!file2)
+		{
+			return 0;
+		}	
+		while(!file2.fail()) //Unpacking record data
+		{
+				file2.getline(stdrec[I].ind,5,'|');
+				file2.getline(stdrec[I].plid,5,'|');
+				file2.getline(stdrec[I].plnm,15,'|');
+				file2.getline(stdrec[I].egy,15,'|');
+				file2.getline(stdrec[I].cst,15,'|');
+			    file2.getline(stdrec[I].nos,15,'\n');
+			  
+			I++; 	
+		}
+	I--;
+	file2.close();
+	return I;
+}
+
+void retrieve_details(char st_no[])
+{
+		no = get_num_records();
+		for(int i=0;i<no;i++)
+		{
+			if(strcmp(stdrec[i].ind,st_no)==0) 
+			{
+				cout<<"\n\n"<<"Planet	 details : ";
+				cout<<"\nPLANETID   :"<<stdrec[i].plid<<"\nPLANETNAME   :"<<stdrec[i].plnm<<"\nEXISTINGGALAXY   :"<<stdrec[i].egy<<"\nCLOSERSTAR  :"<<stdrec[i].cst<<"\nNO.OFSATELLITE:"<<stdrec[i].nos<<"\n";
+		break;
+			}
+		}
+}
+
+
+
+
+		
+		//if(strcmp(st_plid,rt_plid)==0)
+//	if(!flag1)
+//		{
+//			strcpy(stdrec[I].plid,rt_plid);
+//	cout<<rt_plid;
+	//break;
+	
+void add_record()
+{
+	char buf1[100],buf2[20];
+	fstream file1,file2;
+	int I,cnt;
+	char plidno[10],st_plid[20],rt_plid[20],st_no[10];
+	cosmos s;
+
+		cnt=get_num_records();
+		file1.open("index.txt",ios::out|ios::app);
+		if(!file1)
+		{
+			cout<<"\nError !\n";
+			exit(0);
+		}
+		file2.open("record.txt",ios::out|ios::app);
+		if(!file2)
+		{
+			cout<<"\nError !\n";
+			exit(0);
+		}
+		cout<<"\nEnter the no. of Planets : ";
+		cin>>no;
+		cout<<"\nEnter the details :\n"; 
+		for(I=cnt; I<(cnt+no); I++)
+		 {                  
+				cout<<"\nPLANETNAME : ";
+				cin>>s.plnm;
+				cout<<"\nPLANETID : ";
+				cin>>s.plid;
+			
+				if(strcmp(s.plid,rt_plid)==0)
+				{
+					cout<<"Repeated ID";
+					cout<<"Reenter ID";
+					cin>>s.plid;
+					strcpy(stdrec[I].plid,s.plid);
+					cout<<stdrec[I].plid;
+				}
+				else{
+					strcpy(stdrec[I].plid,s.plid);
+					cout<<stdrec[I].plid;
+				}
+				
+					
+					
+				
+			
+				//add_stdrecord(plidno);
+				
+		
+		        cout<<"\nEXISTINGGALAXY : ";
+				cin>>s.egy;
+				cout<<"\nCLOSERSTAR : ";
+				cin>>s.cst;
+				cout<<"\nNO.OFSATELLITE : ";
+				cin>>s.nos;
+				
+			
+				sprintf(buf2,"%s|%d\n",s.plid,I);
+				file1<<buf2;
+			sprintf(buf1,"%d|%s|%s|%s|%s|%s\n",I,s.plid,s.plnm,s.egy,s.cst,s.nos);
+			file2<<buf1;
+		}
+		file1.close();
+		file2.close();
+}
+
+
+void search_record()
+{
+	int I,flag1;
+	char st_no[5],st_plid[5],rt_plid[5];
+	fstream file1;
+
+		cout<<"\nPlease enter the ID of the Planet";
+		cout<<" whose record is to be displayed\n";
+		cin>>st_plid;
+		file1.open("index.txt",ios::in); 
+		if(!file1)
+		{
+				cout<<"\nError !\n";
+				exit(0);
+		}
+		flag1=0;
+		while(!file1.eof())
+		{
+				file1.getline(rt_plid,5,'|');
+				file1.getline(st_no,5,'\n');    
+
+				if(strcmp(st_plid,rt_plid)==0)
+				{
+						retrieve_details(st_no);         
+						flag1=1;                  
+						break;
+				}
+		}
+		if(!flag1)
+			cout<<"\nRecord search failed !!\n"; 
+		file1.close();
+}
+
+void delete_stdrecord(char plidno[])
+{
+	int I=0;
+	fstream file1,file2;
+		no = get_num_records();	
+		int flag=-1;
+			for(I=0;I<no;I++)       //Check for the record's existence
+			{
+				if(strcmp(stdrec[I].ind,plidno)==0)
+				{
+						flag=I;
+						break;
+				}	
+			}
+			if(flag==-1)                //Record not found
+			{
+						cout<<"\nError !\n";
+						return;
+			}
+			if(flag==(no-1))            //Delete found last record
+			{
+						no--;
+						cout<<"\nDeleted !\n";
+			}	
+			else
+			{
+					for(I=flag;I<no;I++)
+					{
+							stdrec[I] = stdrec[I+1];
+					}
+					no--;
+					cout<<"\nDeleted !\n";
+			}
+		file1.open("index.txt",ios::out);  
+		file2.open("record.txt",ios::out);  
+		for(I=0;I<no;I++)                   
+		{                                   
+			 file1<<stdrec[I].plid<<"|"<<I<<"\n";
+file2<<I<<"|"<<stdrec[I].plid<<"|"<<stdrec[I].plnm<<"|"<<stdrec[I].egy<<"|"<<stdrec[I].cst<<"|"<<stdrec[I].nos<<"\n";
+		}
+		file1.close();
+		file2.close();
+		return;
+}
+
+void delete_record()
+{
+	int I,flag;
+	char st_no[5],st_plid[5],rt_plid[5];
+	fstream file1;
+		cout<<"\nPlease enter the ID of the Planet ";
+		cout<<" whose record is to be deleted\n";
+		cin>>st_plid;
+		file1.open("index.txt",ios::in);
+		if(!file1)
+		{
+				cout<<"\nError !\n";
+				exit(0);
+		}		
+		flag=0;
+		while(!file1.eof())
+		
+		
+		
+		{
+				file1.getline(rt_plid,5,'|');      //Search index file and
+				file1.getline(st_no,5,'\n');       //call deletion
+		//if index found
+				if(strcmp(st_plid,rt_plid)==0)
+				{
+						delete_stdrecord(st_no); 
+						flag=1;
+						break;
+				}
+		}
+	if(!flag)
+			cout<<"\nDeletion failed !\n"; 
+	file1.close();
+}
+
+
+
+void display_record()
+{
+	fstream file2;
+	cosmos s;
+			file2.open("record.txt",ios::in);
+			cout<<"\n\n"<<"Planet details : \n";
+cout<<"Index"<<"\t"<<"PLANETID"<<"\t"<<"PLANETNAME"<<"\t"<<"EXISTINGGALAXY"<<"\t"<<"CLOSERSTAR"<<"\t"<<"NO.OFSATELLITE"<<endl; 
+		while(!file2.fail()) //Unpacking record data
+		{
+			file2.getline(s.ind,5,'|');
+			file2.getline(s.plid,5,'|');
+			file2.getline(s.plnm,15,'|');
+			file2.getline(s.egy,15,'|');
+			file2.getline(s.cst,15,'|');
+		    file2.getline(s.nos,15,'\n');
+cout<<s.ind<<"\t\t"<<s.plid<<"\t\t"<<s.plnm<<"\t\t"<<s.egy<<"\t\t"<<s.cst<<"\t\t"<<s.nos<<"\t\t"<<s.typp<<"\n";
+		}
+		file2.close();
+}
+
+
+//SATELLITE RECORD
+
+int get_num_records1()
+{
+	int I=0;
+	fstream file2;
+		file2.open("record1.txt",ios::in);
+		if(!file2)
+		{
+			return 0;
+		}	
+		while(!file2.fail()) //Unpacking record data
+		{
+				file2.getline(stdrec[I].indx,5,'|');
+				file2.getline(stdrec[I].sid,5,'|');
+				file2.getline(stdrec[I].snm,15,'|');
+				file2.getline(stdrec[I].pl,15,'|');
+				file2.getline(stdrec[I].ely,15,'|');
+			    file2.getline(stdrec[I].typs,15,'\n');
+			I++; 	
+		}
+	I--;
+	file2.close();
+	return I;
+}
+
+void retrieve_details1(char st_no[])
+{
+		no = get_num_records1();
+		for(int i=0;i<no;i++)
+		{
+			if(strcmp(stdrec[i].indx,st_no)==0) 
+			{
+				cout<<"\n\n"<<"Satellite	 details : ";
+				cout<<"\nSATELIITEID   :"<<stdrec[i].sid<<"\nSATELLITENAME   :"<<stdrec[i].snm<<"\nPLANET   :"<<stdrec[i].pl<<"\nEXISTINGGALAXY  :"<<stdrec[i].ely<<"\nTYPE OF SATELLITE :"<<stdrec[i].typs<<"\n";
+		break;
+			}
+		}
+}
+
+void add_record1()
+{
+	char buf1[100],buf2[20];
+	fstream file1,file2;
+	int I,cnt;
+	cosmos s;
+
+		cnt=get_num_records1();
+		file1.open("index1.txt",ios::out|ios::app);
+		if(!file1)
+		{
+			cout<<"\nError !\n";
+			exit(0);
+		}
+		file2.open("record1.txt",ios::out|ios::app);
+		if(!file2)
+		{
+			cout<<"\nError !\n";
+			exit(0);
+		}
+		cout<<"\nEnter the no. of satellites : ";
+		cin>>no;
+		cout<<"\nEnter the details :\n"; 
+		for(I=cnt; I<(cnt+no); I++)
+		 {                  
+				cout<<"\nSATELLITENAME : ";
+				cin>>s.snm;
+				cout<<"\nSATELLITEID : ";
+				cin>>s.sid;
+				cout<<"\nPLANET : ";
+				cin>>s.pl;
+				cout<<"\nEXISTINGGALAXY : ";
+				cin>>s.ely;
+				cout<<"\nTYPEOFSATELLITE : ";
+				cin>>s.typs;
+			
+				sprintf(buf2,"%s|%d\n",s.sid,I);
+				file1<<buf2;
+			sprintf(buf1,"%d|%s|%s|%s|%s|%s\n",I,s.sid,s.snm,s.pl,s.ely,s.typs);
+			file2<<buf1;
+		}
+		file1.close();
+		file2.close();
+}
+
+
+void search_record1()
+{
+	int I,flag1;
+	char st_no[5],st_sid[5],rt_sid[5];
+	fstream file1;
+
+		cout<<"\nPlease enter the ID of the Satellite";
+		cout<<" whose record is to be displayed\n";
+		cin>>st_sid;
+		file1.open("index1.txt",ios::in); 
+		if(!file1)
+		{
+				cout<<"\nError !\n";
+				exit(0);
+		}
+		flag1=0;
+		while(!file1.eof())
+		{
+				file1.getline(rt_sid,5,'|');
+				file1.getline(st_no,5,'\n');    
+
+				if(strcmp(st_sid,rt_sid)==0)
+				{
+						retrieve_details1(st_no);         
+						flag1=1;                  
+						break;
+				}
+		}
+		if(!flag1)
+			cout<<"\nRecord search failed !!\n"; 
+		file1.close();
+}
+
+void delete_stdrecord1(char sidno[])
+{
+	int I=0;
+	fstream file1,file2;
+		no = get_num_records1();	
+		int flag=-1;
+			for(I=0;I<no;I++)       //Check for the record's existence
+			{
+				if(strcmp(stdrec[I].indx,sidno)==0)
+				{
+						flag=I;
+						break;
+				}	
+			}
+			if(flag==-1)                //Record not found
+			{
+						cout<<"\nError !\n";
+						return;
+			}
+			if(flag==(no-1))            //Delete found last record
+			{
+						no--;
+						cout<<"\nDeleted !\n";
+			}	
+			else
+			{
+					for(I=flag;I<no;I++)
+					{
+							stdrec[I] = stdrec[I+1];
+					}
+					no--;
+					cout<<"\nDeleted !\n";
+			}
+		file1.open("index1.txt",ios::out);  
+		file2.open("record1.txt",ios::out);  
+		for(I=0;I<no;I++)                   
+		{                                   
+			 file1<<stdrec[I].sid<<"|"<<I<<"\n";
+file2<<I<<"|"<<stdrec[I].sid<<"|"<<stdrec[I].snm<<"|"<<stdrec[I].pl<<"|"<<stdrec[I].ely<<"|"<<stdrec[I].typs<<"\n";
+		}
+		file1.close();
+		file2.close();
+		return;
+}
+
+void delete_record1()
+{
+	int I,flag;
+	char st_no[5],st_sid[5],rt_sid[5];
+	fstream file1;
+		cout<<"\nPlease enter the ID of the Satellite ";
+		cout<<" whose record is to be deleted\n";
+		cin>>st_sid;
+		file1.open("index1.txt",ios::in);
+		if(!file1)
+		{
+				cout<<"\nError !\n";
+				exit(0);
+		}		
+		flag=0;
+		while(!file1.eof())
+		
+		
+		
+		{
+				file1.getline(rt_sid,5,'|');      //Search index file and
+				file1.getline(st_no,5,'\n');       //call deletion
+		//if index found
+				if(strcmp(st_sid,rt_sid)==0)
+				{
+						delete_stdrecord1(st_no); 
+						flag=1;
+						break;
+				}
+		}
+	if(!flag)
+			cout<<"\nDeletion failed !\n"; 
+	file1.close();
+}
+
+
+
+void display_record1()
+{
+	fstream file2;
+	cosmos s;
+			file2.open("record.txt",ios::in);
+			cout<<"\n\n"<<"Satellite details : \n";
+cout<<"Index"<<"\t"<<"SATELLITEID"<<"\t"<<"SATELLITENAME"<<"\t"<<"PLANET"<<"\t"<<"EXISTINGGALAXY"<<"\t"<<"TYPEOFSATELLITE"<<"\t"<<endl; 
+		while(!file2.fail()) //Unpacking record data
+		{
+			file2.getline(s.indx,5,'|');
+			file2.getline(s.sid,5,'|');
+			file2.getline(s.snm,15,'|');
+			file2.getline(s.pl,15,'|');
+			file2.getline(s.ely,15,'|');
+		    file2.getline(s.typs,15,'\n');
+cout<<s.indx<<"\t\t"<<s.sid<<"\t\t"<<s.snm<<"\t\t"<<s.pl<<"\t\t"<<s.ely<<"\t\t"<<s.typs<<"\n";
+		}
+		file2.close();
+}
+
+//STAR RECORD
+
+int get_num_records2()
+{
+	
+	int I=0;
+	fstream file2;
+		file2.open("record2.txt",ios::in);
+		if(!file2)
+		{
+			return 0;
+		}	
+		while(!file2.fail()) //Unpacking record data
+		{
+				file2.getline(stdrec[I].indy,5,'|');
+				file2.getline(stdrec[I].stid,5,'|');
+				file2.getline(stdrec[I].stnm,15,'|');
+				file2.getline(stdrec[I].con,15,'|');
+			    file2.getline(stdrec[I].gal,15,'\n');
+			I++; 	
+		}
+	I--;
+	file2.close();
+	return I;
+}
+
+void retrieve_details2(char st_no[])
+{
+		no = get_num_records2();
+		for(int i=0;i<no;i++)
+		{
+			if(strcmp(stdrec[i].indy,st_no)==0) 
+			{
+				cout<<"\n\n"<<"STAR	DETAILS : ";
+				cout<<"\nSTARID   :"<<stdrec[i].stid<<"\nSTARNAME   :"<<stdrec[i].stnm<<"\nCONSELLATION  :" <<stdrec[i].con<<"\nGALAXY    :"<<stdrec[i].gal<<"\n";
+		break;
+			}
+
+		}
+}
+
+void add_record2()
+{
+	char buf1[100],buf2[20];
+	fstream file1,file2;
+	int I,cnt;
+	cosmos s;
+
+		cnt=get_num_records2();
+		file1.open("index2.txt",ios::out|ios::app);
+		if(!file1)
+		{
+			cout<<"\nError !\n";
+			exit(0);
+		}
+		file2.open("record2.txt",ios::out|ios::app);
+		if(!file2)
+		{
+			cout<<"\nError !\n";
+			exit(0);
+		}
+		cout<<"\nEnter the no. of Stars : ";
+		cin>>no;
+		cout<<"\nEnter the details :\n"; 
+		for(I=cnt; I<(cnt+no); I++)
+		 {                  
+				cout<<"\nSTARNAME : ";
+				cin>>s.stnm;
+				cout<<"\nSTARID : ";
+				cin>>s.stid;
+				cout<<"\nCONSELLATION: ";
+				cin>>s.con;
+				cout<<"\nGALAXY: ";
+				cin>>s.gal;
+				sprintf(buf2,"%s|%d\n",s.stid,I);
+				file1<<buf2;
+			sprintf(buf1,"%d|%s|%s|%s|%s\n",I,s.stid,s.stnm,s.con,s.gal);
+			file2<<buf1;
+		}
+		file1.close();
+		file2.close();
+}
+
+
+void search_record2()
+{
+	int I,flag1;
+	char st_no[5],st_stid[5],rt_stid[5];
+	fstream file1;
+
+		cout<<"\nPlease enter the ID of the Star";
+		cout<<" whose record is to be displayed\n";
+		cin>>st_stid;
+		file1.open("index2.txt",ios::in); 
+		if(!file1)
+		{
+				cout<<"\nError !\n";
+				exit(0);
+		}
+		flag1=0;
+		while(!file1.eof())
+		{
+				file1.getline(rt_stid,5,'|');
+				file1.getline(st_no,5,'\n');    
+
+				if(strcmp(st_stid,rt_stid)==0)
+				{
+						retrieve_details2(st_no);         
+						flag1=1;                  
+						break;
+				}
+		}
+		if(!flag1)
+			cout<<"\nRecord search failed !!\n"; 
+		file1.close();
+}
+
+
+void delete_stdrecord2(char stidno[])
+{
+	int I=0;
+	fstream file1,file2;
+		no = get_num_records2();	
+		int flag=-1;
+			for(I=0;I<no;I++)       //Check for the record's existence
+			{
+				if(strcmp(stdrec[I].indy,stidno)==0)
+				{
+						flag=I;
+						break;
+				}	
+			}
+			if(flag==-1)                //Record not found
+			{
+						cout<<"\nError !\n";
+						return;
+			}
+			if(flag==(no-1))            //Delete found last record
+			{
+						no--;
+						cout<<"\nDeleted !\n";
+			}	
+			else
+			{
+					for(I=flag;I<no;I++)
+					{
+							stdrec[I] = stdrec[I+1];
+					}
+					no--;
+					cout<<"\nDeleted !\n";
+			}
+		file1.open("index2.txt",ios::out);  
+		file2.open("record2.txt",ios::out);  
+		for(I=0;I<no;I++)                   
+		{                                   
+			 file1<<stdrec[I].stid<<"|"<<I<<"\n";
+file2<<I<<"|"<<stdrec[I].stid<<"|"<<stdrec[I].stnm<<"|"<<stdrec[I].con<<"|"<<stdrec[I].gal<<"\n";
+		}
+		file1.close();
+		file2.close();
+		return;
+}
+
+void delete_record2()
+{
+	int I,flag;
+	char st_no[5],st_stid[5],rt_stid[5];
+	fstream file1;
+		cout<<"\nPlease enter the ID of the Star ";
+		cout<<" whose record is to be deleted\n";
+		cin>>st_stid;
+		file1.open("index2.txt",ios::in);
+		if(!file1)
+		{
+				cout<<"\nError !\n";
+				exit(0);
+		}		
+		flag=0;
+		while(!file1.eof())
+		{
+				file1.getline(rt_stid,5,'|');      //Search index file and
+				file1.getline(st_no,5,'\n');       //call deletion
+		//if index found
+				if(strcmp(st_stid,rt_stid)==0)
+				{
+						delete_stdrecord2(st_no); 
+						flag=1;
+						break;
+				}
+		}
+	if(!flag)
+			cout<<"\nDeletion failed !\n"; 
+	file1.close();
+}
+
+
+
+void display_record2()
+{
+	fstream file2;
+	cosmos s;
+			file2.open("record2.txt",ios::in);
+			cout<<"\n\n"<<"STAR DETAILS : \n";
+cout<<"Index"<<"\t"<<"STARID"<<"\t"<<"STARNAME"<<"\t"<<"CONSELLATION"<<"\t"<<"GALAXY"<<"\t"<<endl; 
+		while(!file2.fail()) //Unpacking record data
+		{
+			file2.getline(s.indy,5,'|');
+			file2.getline(s.stid,5,'|');
+			file2.getline(s.stnm,15,'|');
+			file2.getline(s.con,15,'|');
+			file2.getline(s.gal,15,'\n');
+cout<<s.indy<<"\t\t"<<s.stid<<"\t\t"<<s.stnm<<"\t\t"<<s.con<<"\t\t"<<s.gal<<"\n";
+		}
+		file2.close();
+}
+
+//GALAXY RECORD
+
+int get_num_records3()
+{
+	
+	int I=0;
+	fstream file2;
+		file2.open("record3.txt",ios::in);
+		if(!file2)
+		{
+			return 0;  
+		}	
+		while(!file2.fail()) //Unpacking record data
+		{
+				file2.getline(stdrec[I].indz,5,'|');
+				file2.getline(stdrec[I].glid,5,'|');
+				file2.getline(stdrec[I].glnm,15,'|');
+				file2.getline(stdrec[I].glsh,15,'|');
+			    file2.getline(stdrec[I].glco,15,'\n'); 
+			I++; 	
+		}
+	I--;
+	file2.close();
+	return I;
+}
+
+void retrieve_details3(char st_no[])
+{
+		no = get_num_records3();
+		for(int i=0;i<no;i++)
+		{
+			if(strcmp(stdrec[i].indz,st_no)==0) 
+			{
+				cout<<"\n\n"<<"GALAXY	DETAILS : ";
+				cout<<"\nGALAXYID   :"<<stdrec[i].glid<<"\nGALAXYNAME   :"<<stdrec[i].glnm<<"\nGALAXYSHAPE  :" <<stdrec[i].glsh<<"\nGALAXYCONSELLATION :"<<stdrec[i].glco<<"\n";
+		break;
+			}
+		}
+}
+
+void add_record3()
+{
+	char buf1[100],buf2[20];
+	fstream file1,file2;  
+	int I,cnt;
+	cosmos s;
+
+		cnt=get_num_records3();
+		file1.open("index3.txt",ios::out|ios::app);
+		if(!file1)
+		{
+			cout<<"\nError !\n";
+			exit(0);
+		}
+		file2.open("record3.txt",ios::out|ios::app);
+		if(!file2)
+		{
+			cout<<"\nError !\n";
+			exit(0);
+		}
+		cout<<"\nEnter the no. of Galaxy's' : ";
+		cin>>no;
+		cout<<"\nEnter the details :\n"; 
+		for(I=cnt; I<(cnt+no); I++)
+		 {                  
+				cout<<"\nGALAXYNAME : ";
+				cin>>s.glnm;
+				cout<<"\nGALAXYID : ";
+				cin>>s.glid;
+				cout<<"\n GALAXYSHAPE: ";
+				cin>>s.glsh;
+				cout<<"\nGALAXYCONSLLATION: ";
+				cin>>s.glco;
+	
+				sprintf(buf2,"%s|%d\n",s.glid,I);
+				file1<<buf2;
+			sprintf(buf1,"%d|%s|%s|%s|%s\n",I,s.glid,s.glnm,s.glsh,s.glco);
+			file2<<buf1;
+		}
+		file1.close();
+		file2.close();
+}
+
+
+void search_record3()
+{
+	int I,flag1;
+	char st_no[5],st_glid[5],rt_glid[5];
+	fstream file1;
+
+		cout<<"\nPlease enter the ID of the Galaxy";
+		cout<<" whose record is to be displayed\n";
+		cin>>st_glid;
+		file1.open("index3.txt",ios::in); 
+		if(!file1)
+		{
+				cout<<"\nError !\n";
+				exit(0);
+		}
+		flag1=0;
+		while(!file1.eof())
+		{
+				file1.getline(rt_glid,5,'|');
+				file1.getline(st_no,5,'\n');    
+
+				if(strcmp(st_glid,rt_glid)==0)
+				{
+						retrieve_details3(st_no);         
+						flag1=1;                  
+						break;
+				}
+		}
+		if(!flag1)
+			cout<<"\nRecord search failed !!\n"; 
+		file1.close();
+}
+
+void delete_stdrecord3(char glidno[])
+{
+	int I=0;
+	fstream file1,file2;
+		no = get_num_records3();	
+		int flag=-1;
+			for(I=0;I<no;I++)       //Check for the record's existence
+			{
+				if(strcmp(stdrec[I].indz,glidno)==0)
+				{
+						flag=I;
+						break;
+				}	
+			}
+			if(flag==-1)                //Record not found
+			{
+						cout<<"\nError !\n";
+						return;
+			}
+			if(flag==(no-1))            //Delete found last record
+			{
+						no--;
+						cout<<"\nDeleted !\n";
+			}	
+			else
+			{
+					for(I=flag;I<no;I++)
+					{
+							stdrec[I] = stdrec[I+1];
+					}
+					no--;
+					cout<<"\nDeleted !\n";
+			}
+		file1.open("index3.txt",ios::out);  
+		file2.open("record3.txt",ios::out);  
+		for(I=0;I<no;I++)                   
+		{                                   
+			 file1<<stdrec[I].glid<<"|"<<I<<"\n";
+file2<<I<<"|"<<stdrec[I].glid<<"|"<<stdrec[I].glnm<<"|"<<stdrec[I].glsh<<"|"<<stdrec[I].glco<<"\n";
+		}
+		file1.close();
+		file2.close();
+		return;
+}
+
+void delete_record3()
+{
+	int I,flag;
+	char st_no[5],st_glid[5],rt_glid[5];
+	fstream file1;
+		cout<<"\nPlease enter the ID of the Galaxy";
+		cout<<" whose record is to be deleted\n";
+		cin>>st_glid;
+		file1.open("index3.txt",ios::in);
+		if(!file1)
+		{
+				cout<<"\nError !\n";
+				exit(0);
+		}		
+		flag=0;
+		while(!file1.eof())
+		{
+				file1.getline(rt_glid,5,'|');      //Search index file and
+				file1.getline(st_no,5,'\n');       //call deletion
+		//if index found
+				if(strcmp(st_glid,rt_glid)==0)
+				{
+						delete_stdrecord3(st_no); 
+						flag=1;
+						break;
+				}
+		}
+	if(!flag)
+			cout<<"\nDeletion failed !\n"; 
+	file1.close();
+}
+
+
+
+void display_record3()
+{
+	fstream file2;
+	cosmos s;
+			file2.open("record3.txt",ios::in);
+			cout<<"\n\n"<<"GALAXY DETAILS : \n";
+cout<<"Index"<<"\t"<<"GALAXYID"<<"\t"<<"GALAXYNAME"<<"\t"<<"GALAXYSHAPE"<<"\t"<<"GALAXYCONSELLATION"<<"\t"<<endl; 
+		while(!file2.fail()) //Unpacking record data
+		{
+			file2.getline(s.indz,5,'|');
+			file2.getline(s.glid,5,'|');
+			file2.getline(s.glnm,15,'|');
+			file2.getline(s.glsh,15,'|');
+			file2.getline(s.glco,15,'\n');
+cout<<s.indz<<"\t\t"<<s.glid<<"\t\t"<<s.glnm<<"\t\t"<<s.glsh<<"\t\t"<<s.glco<<"\n";
+		}
+		file2.close();
+}
+
+
+
+//ASTEROID RCECORD
+
+
+int get_num_records4()
+{
+	
+	int I=0;
+	fstream file2;
+		file2.open("record4.txt",ios::in);
+		if(!file2)
+		{
+			return 0;
+		}	
+		while(!file2.fail()) //Unpacking record data
+		{
+				file2.getline(stdrec[I].indw,5,'|');
+				file2.getline(stdrec[I].astid,5,'|');
+				file2.getline(stdrec[I].astnm,15,'|');
+				file2.getline(stdrec[I].yop,15,'|');
+				file2.getline(stdrec[I].asty,15,'|');
+			    file2.getline(stdrec[I].galx,15,'\n');
+			I++; 	
+		}
+	I--;
+	file2.close();
+	return I;
+}
+
+void retrieve_details4(char st_no[])
+{
+		no = get_num_records4();
+		for(int i=0;i<no;i++)
+		{
+			if(strcmp(stdrec[i].indw,st_no)==0) 
+			{
+				cout<<"\n\n"<<"ASTEROID	DETAILS : ";
+				cout<<"\nASTEROIDID   :"<<stdrec[i].astid<<"\nASTEROIDNAME   :"<<stdrec[i].astnm<<"\nYEAROFAPP  :" <<stdrec[i].yop<<"\nASTEROIDTYPE :"<<stdrec[i].asty<<"\nGALAXY :"<<stdrec[i].galx<<"\n";
+		break;
+			}
+		}
+}
+
+void add_record4()
+{
+	char buf1[100],buf2[20];
+	fstream file1,file2;
+	int I,cnt;
+	cosmos s;
+
+		cnt=get_num_records4();
+		file1.open("index4.txt",ios::out|ios::app);
+		if(!file1)
+		{
+			cout<<"\nError !\n";
+			exit(0);
+		}
+		file2.open("record4.txt",ios::out|ios::app);
+		if(!file2)
+		{
+			cout<<"\nError !\n";
+			exit(0);
+		}
+		cout<<"\nEnter the no. of Asteroids : ";
+		cin>>no;
+		cout<<"\nEnter the details :\n"; 
+		for(I=cnt; I<(cnt+no); I++)
+		 {                  
+				cout<<"\nASTEROIDNAME : ";
+				cin>>s.astnm;
+				cout<<"\nASTEROIDID : ";
+				cin>>s.astid;
+				cout<<"\nYEAROFAPP: ";
+				cin>>s.yop;
+				cout<<"\nASTEROIDTYPE: ";
+				cin>>s.asty;
+				cout<<"\nGALAXY: ";
+				cin>>s.galx;
+				sprintf(buf2,"%s|%d\n",s.astid,I);
+				file1<<buf2;
+			sprintf(buf1,"%d|%s|%s|%s|%s|%s\n",I,s.astid,s.astnm,s.yop,s.asty,s.galx);
+			file2<<buf1;
+		}
+		file1.close();
+		file2.close();
+}
+
+
+void search_record4()
+{
+	int I,flag1;
+	char st_no[5],st_astid[5],rt_astid[5];
+	fstream file1;
+
+		cout<<"\nPlease enter the ID of the Asteroid";
+		cout<<" whose record is to be displayed\n";
+		cin>>st_astid;
+		file1.open("index4.txt",ios::in); 
+		if(!file1)
+		{
+				cout<<"\nError !\n";
+				exit(0);
+		}
+		flag1=0;
+		while(!file1.eof())
+		{
+				file1.getline(rt_astid,5,'|');
+				file1.getline(st_no,5,'\n');    
+
+				if(strcmp(st_astid,rt_astid)==0)
+				{
+						retrieve_details4(st_no);         
+						flag1=1;                  
+						break;
+				}
+		}
+		if(!flag1)
+			cout<<"\nRecord search failed !!\n"; 
+		file1.close();
+}
+
+void delete_stdrecord4(char astidno[])
+{
+	int I=0;
+	fstream file1,file2;
+		no = get_num_records4();	
+		int flag=-1;
+			for(I=0;I<no;I++)       //Check for the record's existence
+			{
+				if(strcmp(stdrec[I].indw,astidno)==0)
+				{
+						flag=I;
+						break;
+				}	
+			}
+			if(flag==-1)                //Record not found
+			{
+						cout<<"\nError !\n";
+						return;
+			}
+			if(flag==(no-1))            //Delete found last record
+			{
+						no--;
+						cout<<"\nDeleted !\n";
+						
+			}	
+			else
+			{
+					for(I=flag;I<no;I++)
+					{
+							stdrec[I] = stdrec[I+1];
+					}
+					no--;
+					cout<<"\nDeleted !\n";
+			}
+		file1.open("index4.txt",ios::out);  
+		file2.open("record4.txt",ios::out);  
+		for(I=0;I<no;I++)                   
+		{                                   
+			 file1<<stdrec[I].astid<<"|"<<I<<"\n";
+file2<<I<<"|"<<stdrec[I].astid<<"|"<<stdrec[I].astnm<<"|"<<stdrec[I].yop<<"|"<<stdrec[I].asty<<"|"<<stdrec[I].galx<<"\n";
+		}
+		file1.close();
+		file2.close();
+		return;
+}
+
+void delete_record4()
+{
+	int I,flag;
+	char st_no[5],st_astid[5],rt_astid[5];
+	fstream file1;
+		cout<<"\nPlease enter the ID of the Asteroid ";
+		cout<<" whose record is to be deleted\n";
+		cin>>st_astid;
+		file1.open("index4.txt",ios::in);
+		if(!file1)
+		{
+				cout<<"\nError !\n";
+				exit(0);
+		}		
+		flag=0;
+		while(!file1.eof())
+		{
+				file1.getline(rt_astid,5,'|');      //Search index file and
+				file1.getline(st_no,5,'\n');       //call deletion
+		//if index found
+				if(strcmp(st_astid,rt_astid)==0)
+				{
+						delete_stdrecord4(st_no); 
+						flag=1;
+						break;
+				}
+		}
+	if(!flag)
+			cout<<"\nDeletion failed !\n"; 
+	file1.close();
+}
+
+
+
+void display_record4()
+{
+	fstream file2;
+	cosmos s;
+			file2.open("record4.txt",ios::in);
+			cout<<"\n\n"<<"ASTEROID DETAILS : \n";
+cout<<"Index"<<"\t"<<"ASTEROIDID"<<"\t"<<"ASTEROIIDNAME"<<"\t"<<"YEAROFAPP"<<"\t"<<"ASTEROIDTYPE"<<"\t"<<"GALAXY"<<"\t"<<endl; 
+		while(!file2.fail()) //Unpacking record data
+		{
+			file2.getline(s.indw,5,'|');
+			file2.getline(s.astid,5,'|');
+			file2.getline(s.astnm,15,'|');
+			file2.getline(s.yop,15,'|');
+			file2.getline(s.asty,15,'|');
+			file2.getline(s.galx,15,'\n');
+cout<<s.indw<<"\t\t"<<s.astid<<"\t\t"<<s.astnm<<"\t\t"<<s.yop<<"\t\t"<<s.asty<<"\t\t"<<s.galx<<"\n";
+		}
+		file2.close();
+}
+
+
+// METEORITE RECORD
+
+int get_num_records5()
+{
+	
+	int I=0;
+	fstream file2;
+		file2.open("record5.txt",ios::in);
+		if(!file2)
+		{
+			return 0;
+		}	
+		while(!file2.fail()) //Unpacking record data
+		{
+				file2.getline(stdrec[I].inds,5,'|');
+				file2.getline(stdrec[I].metid,5,'|');
+				file2.getline(stdrec[I].metnm,15,'|');
+				file2.getline(stdrec[I].yopy,15,'|');
+				file2.getline(stdrec[I].mety,15,'|');
+			    file2.getline(stdrec[I].galy,15,'\n');
+			I++; 	
+		}
+	I--;
+	file2.close();
+	return I;
+}
+
+void retrieve_details5(char st_no[])
+{
+		no = get_num_records5();
+		for(int i=0;i<no;i++)
+		{
+			if(strcmp(stdrec[i].inds,st_no)==0) 
+			{
+				cout<<"\n\n"<<"METEORITE DETAILS : ";
+				cout<<"\nMETEORITEID   :"<<stdrec[i].metid<<"\nMETEORITENAME   :"<<stdrec[i].metnm<<"\nYEAROFMAPP  :" <<stdrec[i].yopy<<"\nMETEORITETYPE :"<<stdrec[i].mety<<"\nGALAXYM :"<<stdrec[i].galy<<"\n";
+		break;
+			}
+		}
+}
+
+void add_record5()
+{
+	char buf1[100],buf2[20];
+	fstream file1,file2;
+	int I,cnt;
+	cosmos s;
+
+		cnt=get_num_records5();
+		file1.open("index5.txt",ios::out|ios::app);
+		if(!file1)
+		{
+			cout<<"\nError !\n";
+			exit(0);
+		}
+		file2.open("record5.txt",ios::out|ios::app);
+		if(!file2)
+		{
+			cout<<"\nError !\n";
+			exit(0);
+		}
+		cout<<"\nEnter the no. of Meteorites : ";
+		cin>>no;
+		cout<<"\nEnter the details :\n"; 
+		for(I=cnt; I<(cnt+no); I++)
+		 {                  
+				cout<<"\nMETEORITENAME : ";
+				cin>>s.metnm;
+				cout<<"\nMETEORITEID : ";
+				cin>>s.metid;
+				cout<<"\nYEAROFMAPP: ";
+				cin>>s.yopy;
+				cout<<"\nMETEORITETYPE: ";
+				cin>>s.mety;
+				cout<<"\nGALAXYM: ";
+				cin>>s.galy;
+				sprintf(buf2,"%s|%d\n",s.metid,I);
+				file1<<buf2;
+			sprintf(buf1,"%d|%s|%s|%s|%s|%s\n",I,s.metid,s.metnm,s.yopy,s.mety,s.galy);
+			file2<<buf1;
+		}
+		file1.close();
+		file2.close();
+}
+
+
+void search_record5()
+{
+	int I,flag1;
+	char st_no[5],st_metid[5],rt_metid[5];
+	fstream file1;
+
+		cout<<"\nPlease enter the ID of the Meteorite";
+		cout<<" whose record is to be displayed\n";
+		cin>>st_metid;
+		file1.open("index5.txt",ios::in); 
+		if(!file1)
+		{
+				cout<<"\nError !\n";
+				exit(0);
+		}
+		flag1=0;
+		while(!file1.eof())
+		{
+				file1.getline(rt_metid,5,'|');
+				file1.getline(st_no,5,'\n');    
+
+				if(strcmp(st_metid,rt_metid)==0)
+				{
+						retrieve_details5(st_no);         
+						flag1=1;                  
+						break;
+				}
+		}
+		if(!flag1)
+			cout<<"\nRecord search failed !!\n"; 
+		file1.close();
+}
+
+void delete_stdrecord5(char metidno[])
+{
+	int I=0;
+	fstream file1,file2;
+		no = get_num_records5();	
+		int flag=-1;
+			for(I=0;I<no;I++)       //Check for the record's existence
+			{
+				if(strcmp(stdrec[I].inds,metidno)==0)
+				{
+						flag=I;
+						break;
+				}	
+			}
+			if(flag==-1)                //Record not found
+			{
+						cout<<"\nError !\n";
+						return;
+			}
+			if(flag==(no-1))            //Delete found last record
+			{
+						no--;
+						cout<<"\nDeleted !\n";
+			}	
+			else
+			{
+					for(I=flag;I<no;I++)
+					{
+							stdrec[I] = stdrec[I+1];
+					}
+					no--;
+					cout<<"\nDeleted !\n";
+			}
+		file1.open("index5.txt",ios::out);  
+		file2.open("record5.txt",ios::out);  
+		for(I=0;I<no;I++)                   
+		{                                   
+			 file1<<stdrec[I].metid<<"|"<<I<<"\n";
+file2<<I<<"|"<<stdrec[I].metid<<"|"<<stdrec[I].metnm<<"|"<<stdrec[I].yopy<<"|"<<stdrec[I].mety<<"|"<<stdrec[I].galy<<"\n";
+		}
+		file1.close();
+		file2.close();
+		return;
+}
+
+void delete_record5()
+{
+	int I,flag;
+	char st_no[5],st_metid[5],rt_metid[5];
+	fstream file1;
+		cout<<"\nPlease enter the ID of the Meteorite ";
+		cout<<" whose record is to be deleted\n";
+		cin>>st_metid;
+		file1.open("index5.txt",ios::in);
+		if(!file1)
+		{
+				cout<<"\nError !\n";
+				exit(0);
+		}		
+		flag=0;
+		while(!file1.eof())
+		{
+				file1.getline(rt_metid,5,'|');      //Search index file and
+				file1.getline(st_no,5,'\n');       //call deletion
+		//if index found
+				if(strcmp(st_metid,rt_metid)==0)
+				{
+						delete_stdrecord5(st_no); 
+						flag=1;
+						break;
+				}
+		}
+	if(!flag)
+			cout<<"\nDeletion failed !\n"; 
+	file1.close();
+}
+
+
+
+void display_record5()
+{
+	fstream file2;
+	cosmos s;
+			file2.open("record5.txt",ios::in);
+			cout<<"\n\n"<<"METEORITE DETAILS : \n";
+cout<<"Index"<<"\t"<<"METEORITEID"<<"\t"<<"METEORITENAME"<<"\t"<<"YEAROFMAPP"<<"\t"<<"METEORITETYPE"<<"\t"<<"GALAXYM"<<"\t"<<endl; 
+		while(!file2.fail()) //Unpacking record data
+		{
+			file2.getline(s.inds,5,'|');
+			file2.getline(s.metid,5,'|');
+			file2.getline(s.metnm,15,'|');
+			file2.getline(s.yopy,15,'|');
+			file2.getline(s.mety,15,'|');
+			file2.getline(s.galy,15,'\n');
+cout<<s.inds<<"\t\t"<<s.metid<<"\t\t"<<s.metnm<<"\t\t"<<s.yopy<<"\t\t"<<s.mety<<"\t\t"<<s.galy<<"\n";
+		}
+		file2.close();
+}
+
+//COMET RECORD
+
+int get_num_records6()
+{
+	
+	int I=0;
+	fstream file2;
+		file2.open("record6.txt",ios::in);
+		if(!file2)
+		{
+			return 0;
+		}	
+		while(!file2.fail()) //Unpacking record data
+		{
+				file2.getline(stdrec[I].indv,5,'|');
+				file2.getline(stdrec[I].comid,5,'|');
+				file2.getline(stdrec[I].comnm,15,'|');
+				file2.getline(stdrec[I].yopz,15,'|');
+				file2.getline(stdrec[I].comt,15,'|');
+			    file2.getline(stdrec[I].galz,15,'\n');
+			I++; 	
+		}
+	I--;
+	file2.close();
+	return I;
+}
+
+void retrieve_details6(char st_no[])
+{
+		no = get_num_records6();
+		for(int i=0;i<no;i++)
+		{
+			if(strcmp(stdrec[i].indv,st_no)==0) 
+			{
+				cout<<"\n\n"<<"COMET	DETAILS : ";
+				cout<<"\nCOMETID   :"<<stdrec[i].comid<<"\nCOMETNAME   :"<<stdrec[i].comnm<<"\nYEAROFCAPP  :" <<stdrec[i].yopz<<"\nCOMETTYPE :"<<stdrec[i].comt<<"\nGALAXYC :"<<stdrec[i].galz<<"\n";
+		break;
+			}
+		}
+}
+
+void add_record6()
+{
+	char buf1[100],buf2[20];
+	fstream file1,file2;
+	int I,cnt;
+	cosmos s;
+
+		cnt=get_num_records6();
+		file1.open("index6.txt",ios::out|ios::app);
+		if(!file1)
+		{
+			cout<<"\nError !\n";
+			exit(0);
+		}
+		file2.open("record6.txt",ios::out|ios::app);
+		if(!file2)
+		{
+			cout<<"\nError !\n";
+			exit(0);
+		}
+		cout<<"\nEnter the no. of Comets : ";
+		cin>>no;
+		cout<<"\nEnter the details :\n"; 
+		for(I=cnt; I<(cnt+no); I++)
+		 {                  
+				cout<<"\nCOMETNAME : ";
+				cin>>s.comnm;
+				cout<<"\nCOMETID : ";
+				cin>>s.comid;
+				cout<<"\nYEAROFCAPP: ";
+				cin>>s.yopz;
+				cout<<"\nCOMETTYPE: ";
+				cin>>s.comt;
+				cout<<"\nGALAXYC: ";
+				cin>>s.galz;
+				sprintf(buf2,"%s|%d\n",s.comid,I);
+				file1<<buf2;
+			sprintf(buf1,"%d|%s|%s|%s|%s|%s\n",I,s.comid,s.comnm,s.yopz,s.comt,s.galz);
+			file2<<buf1;
+		}
+		file1.close();
+		file2.close();
+}
+
+
+void search_record6()
+{
+	int I,flag1;
+	char st_no[5],st_comid[5],rt_comid[5];
+	fstream file1;
+
+		cout<<"\nPlease enter the ID of the Comet";
+		cout<<" whose record is to be displayed\n";
+		cin>>st_comid;
+		file1.open("index6.txt",ios::in); 
+		if(!file1)
+		{
+				cout<<"\nError !\n";
+				exit(0);
+		}
+		flag1=0;
+		while(!file1.eof())
+		{
+				file1.getline(rt_comid,5,'|');
+				file1.getline(st_no,5,'\n');    
+
+				if(strcmp(st_comid,rt_comid)==0)
+				{
+						retrieve_details6(st_no);         
+						flag1=1;                  
+						break;
+				}
+		}
+		if(!flag1)
+			cout<<"\nRecord search failed !!\n"; 
+		file1.close();
+}
+
+void delete_stdrecord6(char comidno[])
+{
+	int I=0;
+	fstream file1,file2;
+		no = get_num_records6();	
+		int flag=-1;
+			for(I=0;I<no;I++)       //Check for the record's existence
+			{
+				if(strcmp(stdrec[I].indv,comidno)==0)
+				{
+						flag=I;
+						break;
+				}	
+			}
+			if(flag==-1)                //Record not found
+			{
+						cout<<"\nError !\n";
+						return;
+			}
+			if(flag==(no-1))            //Delete found last record
+			{
+						no--;
+						cout<<"\nDeleted !\n";
+			}	
+			else
+			{
+					for(I=flag;I<no;I++)
+					{
+							stdrec[I] = stdrec[I+1];
+					}
+					no--;
+					cout<<"\nDeleted !\n";
+			}
+		file1.open("index6.txt",ios::out);  
+		file2.open("record6.txt",ios::out);  
+		for(I=0;I<no;I++)                   
+		{                                   
+			 file1<<stdrec[I].comid<<"|"<<I<<"\n";
+file2<<I<<"|"<<stdrec[I].comid<<"|"<<stdrec[I].comnm<<"|"<<stdrec[I].yopz<<"|"<<stdrec[I].comt<<"|"<<stdrec[I].galz<<"\n";
+		}
+		file1.close();
+		file2.close();
+		return;
+}
+
+void delete_record6()
+{
+	int I,flag;
+	char st_no[5],st_comid[5],rt_comid[5];
+	fstream file1;
+		cout<<"\nPlease enter the ID of the Comet ";
+		cout<<" whose record is to be deleted\n";
+		cin>>st_comid;
+		file1.open("index6.txt",ios::in);
+		if(!file1)
+		{
+				cout<<"\nError !\n";
+				exit(0);
+		}		
+		flag=0;
+		while(!file1.eof())
+		{
+				file1.getline(rt_comid,5,'|');      //Search index file and
+				file1.getline(st_no,5,'\n');       //call deletion
+		//if index found
+				if(strcmp(st_comid,rt_comid)==0)
+				{
+						delete_stdrecord6(st_no); 
+						flag=1;
+						break;
+				}
+		}
+	if(!flag)
+			cout<<"\nDeletion failed !\n"; 
+	file1.close();
+}
+
+
+
+void display_record6()
+{
+	fstream file2;
+	cosmos s;
+			file2.open("record6.txt",ios::in);
+			cout<<"\n\n"<<"COMET DETAILS : \n";
+cout<<"Index"<<"\t"<<"COMETID"<<"\t"<<"COMETNAME"<<"\t"<<"YEAROFCAPP"<<"\t"<<"COMETTYPE"<<"\t"<<"GALAXYC"<<"\t"<<endl; 
+		while(!file2.fail()) //Unpacking record data
+		{
+			file2.getline(s.indv,5,'|');
+			file2.getline(s.comid,5,'|');
+			file2.getline(s.comnm,15,'|');
+			file2.getline(s.yopz,15,'|');
+			file2.getline(s.comt,15,'|');
+			file2.getline(s.galz,15,'\n');
+cout<<s.indv<<"\t\t"<<s.comid<<"\t\t"<<s.comnm<<"\t\t"<<s.yopz<<"\t\t"<<s.comt<<"\t\t"<<s.galz<<"\n";
+		}
+		file2.close();
+}
+
+
+//MAIN 
+
+
+int main()
+{
+	//initwindow(800,800);
+
+
+	cout<< "                                                                        COSMOS MANAGEMENT SYSTEM\n\n ";
+
+	
+	int choice;
+	for(;;)
+	{
+	
+    cout<<"\n\t\t ________________________________________________________________________________________________________________________________________________ ";
+    cout<<"\n\t\t|                                                   S P A C E   O R G A N I Z A T I O N                                                          |";
+    cout<<"\n\t\t|________________________________________________________________________________________________________________________________________________| ";
+    cout<<"\n\t\t|                   |                   |                     |                 |                       |                     |                  | ";
+    cout<<"\n\t\t| 1: GALAXY RECORD  | 2: PLANET RECORD  | 3: SATELLITE RECORD | 4: STAR RECORD  |   5: ASTEROID RECORD  | 6: METEORITE RECORD | 7: COMET RECORD  | ";
+    cout<<"\n\t\t|___________________|___________________|_____________________|_________________|_______________________|_____________________|__________________| ";
+    cout<<"\n";
+    cin>>choice;
+    
+	
+		switch(choice)
+		{
+		
+				case 1: 
+			int choice1;
+	for(;;)
+	{
+	cout<<"\n GALAXY RECORD \n\n";
+	cout<<"\n\t\t -----------------------------------------------------------------------------------------------";                    
+    cout<<"\n\t\t| 1:  ADD  RECORD   | 2: SEARCH RECORD  | 3: DELETE  RECORD   | 4: DISPLAY RECORD  |   5: EXIT  |";
+    cout<<"\n\t\t -----------------------------------------------------------------------------------------------";
+    cout<<"\n";
+		cin>>choice1;
+		switch(choice1)
+		{
+		
+		
+			case 1:add_record3();
+			break;
+		
+			case 2:search_record3();
+			break;
+		
+			case 3: delete_record3();
+			break;
+		
+		    case 4:	display_record3();
+			break;
+			
+	     case 5: main();
+		 break;	        
+}
+	       
+}
+
+		
+			case 2: 
+			int choice2;
+	for(;;)
+	{
+			cout<<"\n PLANET RECORD \n\n";
+	cout<<"\n\t\t -----------------------------------------------------------------------------------------------";                    
+    cout<<"\n\t\t| 1:  ADD  RECORD   | 2: SEARCH RECORD  | 3: DELETE  RECORD   | 4: DISPLAY RECORD  |   5: EXIT  |";
+    cout<<"\n\t\t -----------------------------------------------------------------------------------------------";
+    cout<<"\n";
+		cin>>choice2;
+		switch(choice2)
+		{
+		
+		
+			case 1:add_record();
+			break;
+		
+			case 2:search_record();
+			break;
+		
+			case 3: delete_record();
+			break;
+		
+		    case 4:	display_record();
+			break;
+			
+	     case 5: main();
+		 break;	        
+	        
+	       
+}
+}
+
+			
+			case 3: 
+			int choice3;
+	for(;;)
+	{
+			cout<<"\n SATELLITE RECORD \n\n";
+	cout<<"\n\t\t -----------------------------------------------------------------------------------------------";                    
+    cout<<"\n\t\t| 1:  ADD  RECORD   | 2: SEARCH RECORD  | 3: DELETE  RECORD   | 4: DISPLAY RECORD  |   5: EXIT  |";
+    cout<<"\n\t\t -----------------------------------------------------------------------------------------------";
+    cout<<"\n";
+		cin>>choice3;
+		switch(choice3)
+		{
+			case 1:add_record1();
+			break;
+			
+		
+		    case 2:search_record1();
+			break;
+		
+		    case 3:	delete_record1();
+			break;
+		
+		    case 4:	display_record1();
+			break;
+			
+	        case 5: main();
+	        break;
+		
+		}
+	}
+		case 4:
+		int choice4;
+       for(;;)
+	{
+			cout<<"\n STAR RECORD \n\n";
+	cout<<"\n\t\t -----------------------------------------------------------------------------------------------";                    
+    cout<<"\n\t\t| 1:  ADD  RECORD   | 2: SEARCH RECORD  | 3: DELETE  RECORD   | 4: DISPLAY RECORD  |   5: EXIT  |";
+    cout<<"\n\t\t -----------------------------------------------------------------------------------------------";
+    cout<<"\n";
+				cin>>choice4;
+		switch(choice4)
+		{
+		
+		
+			case 1:add_record2();
+			break;
+		
+			case 2:search_record2();
+			break;
+		
+			case 3: delete_record2();
+			break;
+		
+		    case 4:	display_record2();
+			break;
+			
+	     case 5: main();
+		 break;	        
+	        
+}
+}
+		case 5:
+		int choice5;
+        for(;;)
+	{
+			cout<<"\n ASTEROID RECORD \n\n";
+	cout<<"\n\t\t -----------------------------------------------------------------------------------------------";                    
+    cout<<"\n\t\t| 1:  ADD  RECORD   | 2: SEARCH RECORD  | 3: DELETE  RECORD   | 4: DISPLAY RECORD  |   5: EXIT  |";
+    cout<<"\n\t\t -----------------------------------------------------------------------------------------------";
+    cout<<"\n";
+		cin>>choice5;
+		switch(choice5)
+		{
+		
+		
+			case 1:add_record4();
+			break;
+		
+			case 2:search_record4();
+			break;
+		
+			case 3: delete_record4();
+			break;
+		
+		    case 4:	display_record4();
+			break;
+			
+	     case 5: main();
+		 break;	        
+	        
+}
+}	 
+case 6:
+		int choice6;
+       for(;;)
+	{
+			cout<<"\n METEORITE RECORD \n\n";
+	cout<<"\n\t\t -----------------------------------------------------------------------------------------------";                    
+    cout<<"\n\t\t| 1:  ADD  RECORD   | 2: SEARCH RECORD  | 3: DELETE  RECORD   | 4: DISPLAY RECORD  |   5: EXIT  |";
+    cout<<"\n\t\t -----------------------------------------------------------------------------------------------";
+    cout<<"\n";
+		cin>>choice6;
+		switch(choice6)
+		{
+		
+		
+			case 1:add_record5();
+			break;
+		
+			case 2:search_record5();
+			break;
+		
+			case 3: delete_record5();
+			break;
+		
+		    case 4:	display_record5();
+			break;
+			
+	     case 5: main();
+		 break;	        
+	        
+}
+}	
+case 7:
+		int choice7;
+       for(;;)
+	{
+			cout<<"\n COMET RECORD \n\n";
+	cout<<"\n\t\t -----------------------------------------------------------------------------------------------";                    
+    cout<<"\n\t\t| 1:  ADD  RECORD   | 2: SEARCH RECORD  | 3: DELETE  RECORD   | 4: DISPLAY RECORD  |   5: EXIT  |";
+    cout<<"\n\t\t -----------------------------------------------------------------------------------------------";
+    cout<<"\n";	
+				cin>>choice7;
+		switch(choice7)
+		{
+		
+		
+			case 1:add_record6();
+			break;
+		
+			case 2:search_record6();
+			break;
+		
+			case 3: delete_record6();
+			break;
+		
+		    case 4:	display_record6();
+			break;
+			
+	     case 5: main();
+		 break;	        
+	        
+}
+}	 
+default:cout<<"\nInvalid choice !\n"; exit(0);	
+		
+	}
+		}
+		
+		}
+		
